@@ -1,4 +1,4 @@
-package GUI8;
+package GUI7;
 
 public abstract class Manage {
 	public abstract void addEvent(Event event);

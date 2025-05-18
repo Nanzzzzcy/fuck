@@ -1,4 +1,4 @@
-package GUI8;
+package GUI7;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -200,9 +200,7 @@ public class EventManagementSystem extends JFrame {
 		// Create edit panel with all editable fields
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 		JTextField txtName = new JTextField(oldEvent.getEventName());
-		txtName.setEditable(false); // 禁止修改
 		JTextField txtArtist = new JTextField(oldEvent.getArtist());
-		txtArtist.setEditable(false); // 禁止修改
 		JTextField txtDate = new JTextField(oldEvent.getEventDate());
 		JTextField txtLocation = new JTextField(oldEvent.getEventLocation());
 		JTextField txtRegularTickets = new JTextField(String.valueOf(oldEvent.getEventAmount()));
@@ -318,24 +316,72 @@ public class EventManagementSystem extends JFrame {
 		}
 
 		try {
-			if (currentUser instanceof Consumer) {
-				Consumer consumer = (Consumer) currentUser;
-				consumer.cancelTicket(amount, targetEvent, isVip);
-
-				// Update the event file
-				updateEventFile(targetEvent);
-
-				refreshUI("Cancel");
-				JOptionPane.showMessageDialog(this, "Booking cancelled successfully", "Success",
-						JOptionPane.INFORMATION_MESSAGE);
-			} else {
-				JOptionPane.showMessageDialog(this, "Only consumers can cancel bookings", "Permission Denied",
-						JOptionPane.ERROR_MESSAGE);
-			}
+			Consumer consumer = (Consumer) currentUser;
+			consumer.cancelTicket(amount, targetEvent, isVip);
+			refreshUI("Cancel");
+			JOptionPane.showMessageDialog(this, "Booking cancelled successfully", "Success",
+					JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Error cancelling booking: " + e.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	private void refreshUI(String showPanel) {
+		// Only recreate panels that need to be refreshed
+		if ("Cancel".equals(showPanel)) {
+			mainPanel.remove(3); // Remove existing cancel panel if it exists
+			mainPanel.add(createCancelPanel(), "Cancel");
+		} else if ("Manage".equals(showPanel)) {
+			// Refresh browse panel when events are modified
+			mainPanel.remove(0); // Remove browse panel
+			mainPanel.add(createBrowsePanel(), "Browse", 0); // Add new browse panel at index 0
+		}
+
+		// Show the requested panel
+		if (showPanel != null) {
+			cardLayout.show(mainPanel, showPanel);
+		}
+	}
+
+	private JPanel loadAndDisplayEvents(boolean bookingEnabled, boolean cancelEnabled, boolean manageEnabled) {
+		JPanel eventListPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+		eventListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+		// 每次加载时从文件刷新事件数据
+		List<Event> events = loadEventsFromFile(Organizer.DEFAULT_FILE_PATH);
+		for (Event event : events) {
+			JPanel eventPanel = new JPanel(new BorderLayout());
+			eventPanel.setBorder(BorderFactory.createTitledBorder("Event: " + event.getEventName()));
+
+			JTextArea eventInfo = new JTextArea();
+			eventInfo.setEditable(false);
+			eventInfo.setFont(new Font("Monospaced", Font.PLAIN, 14));
+			eventInfo.setText(getEventInfoText(event));
+			eventPanel.add(new JScrollPane(eventInfo), BorderLayout.CENTER);
+
+			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			if (bookingEnabled) {
+				JButton btnRegular = new JButton("Regular Book");
+				JButton btnVIP = new JButton("VIP Book");
+
+				btnRegular.addActionListener(e -> handleTicketBooking(event, false, eventInfo));
+				btnVIP.addActionListener(e -> handleTicketBooking(event, true, eventInfo));
+
+				buttonPanel.add(btnRegular);
+				buttonPanel.add(btnVIP);
+			}
+
+			if (cancelEnabled) {
+				JButton btnCancel = new JButton("Cancel Booking");
+				btnCancel.addActionListener(e -> handleTicketCancellation(event, eventListPanel, eventPanel));
+				buttonPanel.add(btnCancel);
+			}
+
+			eventPanel.add(buttonPanel, BorderLayout.SOUTH);
+			eventListPanel.add(eventPanel);
+		}
+		return eventListPanel;
 	}
 
 	private void handleTicketBooking(Event event, boolean isVip, JTextArea eventInfo) {
@@ -415,7 +461,6 @@ public class EventManagementSystem extends JFrame {
 
 				// 刷新UI
 				refreshUI("Cancel");
-				refreshUI("browser");
 
 				JOptionPane.showMessageDialog(this, "Successfully canceled " + amount + " tickets.", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -428,64 +473,6 @@ public class EventManagementSystem extends JFrame {
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
-
-	}
-
-	private void refreshUI(String showPanel) {
-		// Only recreate panels that need to be refreshed
-		if ("Cancel".equals(showPanel)) {
-			mainPanel.remove(3); // Remove existing cancel panel if it exists
-			mainPanel.add(createCancelPanel(), "Cancel");
-		} else if ("Manage".equals(showPanel)) {
-			// Refresh browse panel when events are modified
-			mainPanel.remove(0); // Remove browse panel
-			mainPanel.add(createBrowsePanel(), "Browse", 0); // Add new browse panel at index 0
-		}
-
-		// Show the requested panel
-		if (showPanel != null) {
-			cardLayout.show(mainPanel, showPanel);
-		}
-	}
-
-	private JPanel loadAndDisplayEvents(boolean bookingEnabled, boolean cancelEnabled, boolean manageEnabled) {
-		JPanel eventListPanel = new JPanel(new GridLayout(0, 3, 10, 10));
-		eventListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-		// 每次加载时从文件刷新事件数据
-		List<Event> events = loadEventsFromFile(Organizer.DEFAULT_FILE_PATH);
-		for (Event event : events) {
-			JPanel eventPanel = new JPanel(new BorderLayout());
-			eventPanel.setBorder(BorderFactory.createTitledBorder("Event: " + event.getEventName()));
-
-			JTextArea eventInfo = new JTextArea();
-			eventInfo.setEditable(false);
-			eventInfo.setFont(new Font("Monospaced", Font.PLAIN, 14));
-			eventInfo.setText(getEventInfoText(event));
-			eventPanel.add(new JScrollPane(eventInfo), BorderLayout.CENTER);
-
-			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			if (bookingEnabled) {
-				JButton btnRegular = new JButton("Regular Book");
-				JButton btnVIP = new JButton("VIP Book");
-
-				btnRegular.addActionListener(e -> handleTicketBooking(event, false, eventInfo));
-				btnVIP.addActionListener(e -> handleTicketBooking(event, true, eventInfo));
-
-				buttonPanel.add(btnRegular);
-				buttonPanel.add(btnVIP);
-			}
-
-			if (cancelEnabled) {
-				JButton btnCancel = new JButton("Cancel Booking");
-				btnCancel.addActionListener(e -> handleTicketCancellation(event, eventListPanel, eventPanel));
-				buttonPanel.add(btnCancel);
-			}
-
-			eventPanel.add(buttonPanel, BorderLayout.SOUTH);
-			eventListPanel.add(eventPanel);
-		}
-		return eventListPanel;
 	}
 
 	private void updateEventFile(Event updatedEvent) {

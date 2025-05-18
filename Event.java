@@ -1,4 +1,4 @@
-package GUI8;
+package GUI7;
 
 public class Event {
 	private String eventName;

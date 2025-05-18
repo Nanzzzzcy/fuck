@@ -1,4 +1,4 @@
-package GUI8;
+package GUI7;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -115,7 +115,6 @@ public class Organizer extends User {
 			throw new DataNotFoundException("Event not found for deletion.");
 		}
 		writeAllLines(updatedLines);
-		removeConsumerBookingsByEvent(eventName, "");
 	}
 
 	public void updateEventInfo(List<Event> events) {
@@ -137,36 +136,7 @@ public class Organizer extends User {
 		}
 	}
 
-	// 新增静态方法
-	public static void removeConsumerBookingsByEvent(String eventName, String artist) {
-		List<String> lines = new ArrayList<>();
-		try (BufferedReader reader = new BufferedReader(new FileReader(Consumer.DEFAULT_FILE_PATH))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-		} catch (IOException e) {
-			System.err.println("Error reading booking info: " + e.getMessage());
-			return;
-		}
-		List<String> filteredLines = new ArrayList<>();
-		for (int i = 0; i < lines.size();) {
-			if (i + 3 < lines.size() && lines.get(i + 1).contains(eventName) && lines.get(i + 1).contains(artist)) {
-				i += 5; // 跳过该booking（4行+空行）
-			} else {
-				filteredLines.add(lines.get(i++));
-			}
-		}
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Consumer.DEFAULT_FILE_PATH))) {
-			for (String filteredLine : filteredLines) {
-				writer.write(filteredLine);
-				writer.newLine();
-			}
-		} catch (IOException e) {
-			System.err.println("Error writing booking info: " + e.getMessage());
-		}
-	}
-
+	// Utility method: Read the entire file
 	private List<String> readAllLines() {
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH))) {

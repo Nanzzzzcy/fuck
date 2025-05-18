@@ -1,4 +1,4 @@
-package GUI8;
+package GUI7;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -37,8 +37,7 @@ public class Consumer extends User implements Booking {
 
 	}
 
-	// 只展示 cancelTicket 关键匹配修改
-
+	// ...前略
 	@Override
 	public void cancelTicket(int amount, Event event, boolean isVip) {
 		List<String> lines = new ArrayList<>();
@@ -55,22 +54,20 @@ public class Consumer extends User implements Booking {
 		List<String> filteredLines = new ArrayList<>();
 		boolean found = false;
 		String vipString = "VIP Ticket: " + (isVip ? "Yes" : "No");
-
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			if (line.startsWith("Consumer Info: " + getName() + ", " + getID() + ", " + getPhone())
-					&& i + 3 < lines.size() && lines.get(i + 1).contains(event.getEventName())
-					&& lines.get(i + 1).contains(event.getArtist()) && lines.get(i + 3).equals(vipString)) {
+					&& lines.get(i + 1).startsWith("Event Info: " + event.getEventName() + ", " + event.getEventDate()
+							+ ", " + event.getEventLocation())
+					&& lines.get(i + 3).startsWith(vipString)) {
 
 				int recordedAmount = Integer.parseInt(lines.get(i + 2).split(": ")[1]);
 
 				if (recordedAmount == amount) {
-					// 完全取消该记录
-					i += 4; // 跳过这一组
+					i += 4;
 					found = true;
 					continue;
 				} else if (recordedAmount > amount) {
-					// 部分取消，修改剩余数量
 					lines.set(i + 2, "Ticket Amount: " + (recordedAmount - amount));
 					found = true;
 				}
@@ -79,8 +76,7 @@ public class Consumer extends User implements Booking {
 		}
 
 		if (!found) {
-			throw new IllegalArgumentException(
-					"No matching booking found to cancel. Please check the event details and ticket type.");
+			throw new IllegalArgumentException("No matching booking found to cancel.");
 		}
 
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(DEFAULT_FILE_PATH))) {
