@@ -1,4 +1,4 @@
-package GUI7;
+package GUI10;
 
 public interface Booking {
 	void bookTicket(int amount, Event event);

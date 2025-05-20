@@ -1,4 +1,4 @@
-package GUI7;
+package GUI10;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -57,9 +57,8 @@ public class Consumer extends User implements Booking {
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			if (line.startsWith("Consumer Info: " + getName() + ", " + getID() + ", " + getPhone())
-					&& lines.get(i + 1).startsWith("Event Info: " + event.getEventName() + ", " + event.getEventDate()
-							+ ", " + event.getEventLocation())
-					&& lines.get(i + 3).startsWith(vipString)) {
+					&& i + 3 < lines.size() && lines.get(i + 1).startsWith("Event Info: " + event.getEventName() + ", "
+							+ event.getEventDate() + ", " + event.getEventLocation())) {
 
 				int recordedAmount = Integer.parseInt(lines.get(i + 2).split(": ")[1]);
 

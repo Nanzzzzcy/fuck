@@ -1,4 +1,4 @@
-package GUI7;
+package GUI10;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -115,6 +115,9 @@ public class Organizer extends User {
 			throw new DataNotFoundException("Event not found for deletion.");
 		}
 		writeAllLines(updatedLines);
+
+		// 新增：自动删除所有相关booking
+		deleteRelatedBookings(eventName, eventDate, eventLocation);
 	}
 
 	public void updateEventInfo(List<Event> events) {
@@ -134,6 +137,39 @@ public class Organizer extends User {
 		} catch (IOException e) {
 			System.err.println("Error writing to file: " + e.getMessage());
 		}
+	}
+
+	public static void deleteRelatedBookings(String eventName, String eventDate, String eventLocation) {
+		List<String> lines = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader(Consumer.DEFAULT_FILE_PATH))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (IOException e) {
+			System.err.println("Error reading booking file: " + e.getMessage());
+			return;
+		}
+
+		List<String> updatedLines = new ArrayList<>();
+		for (int i = 0; i < lines.size();) {
+			if (i + 3 < lines.size() && lines.get(i + 1)
+					.startsWith("Event Info: " + eventName + ", " + eventDate + ", " + eventLocation)) {
+				i += 5; // 跳过整个booking block（4行信息+空行）
+			} else {
+				updatedLines.add(lines.get(i++));
+			}
+		}
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Consumer.DEFAULT_FILE_PATH))) {
+			for (String l : updatedLines) {
+				writer.write(l);
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			System.err.println("Error writing booking file: " + e.getMessage());
+		}
+
 	}
 
 	// Utility method: Read the entire file
