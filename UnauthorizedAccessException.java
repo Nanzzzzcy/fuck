@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 public class UnauthorizedAccessException extends RuntimeException {
 	public UnauthorizedAccessException(String message) {

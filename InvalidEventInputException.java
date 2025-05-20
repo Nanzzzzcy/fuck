@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 public class InvalidEventInputException extends RuntimeException {
 	public InvalidEventInputException(String message) {

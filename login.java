@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -29,7 +29,7 @@ public class login {
 				}
 			}
 			if (!block.isEmpty()) {
-				parseAndAddUser(block); // 加载最后一个用户
+				parseAndAddUser(block); // Load the last user
 			}
 		} catch (IOException e) {
 			System.err.println("Error reading user info file: " + e.getMessage());

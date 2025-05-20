@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -118,7 +118,7 @@ public class LoginPage extends JFrame {
 
 		gbc.gridx = 0;
 		gbc.gridy = 5;
-		panel.add(new JLabel(""), gbc); // 空位对齐
+		panel.add(new JLabel(""), gbc); // Vacancy alignment
 		gbc.gridx = 1;
 		panel.add(chkVIP, gbc);
 

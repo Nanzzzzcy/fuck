@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,7 +54,12 @@ public class Organizer extends User {
 			System.err.println("Error writing to file: " + e.getMessage());
 		}
 	}
-
+	
+	public void addEvent(String eventName, String artist, String eventDate, int eventAmount, int eventVip, String eventLocation) {
+	    Event event = new Event(eventName, artist, eventDate, eventAmount, eventVip, eventLocation);
+	    addEvent(event); // Reuse the original method
+	}
+	
 	private void validateOrganizer() {
 		if (!this.getClass().equals(Organizer.class)) {
 			throw new UnauthorizedAccessException("Illegal access: Non-organizer account");
@@ -116,7 +121,7 @@ public class Organizer extends User {
 		}
 		writeAllLines(updatedLines);
 
-		// 新增：自动删除所有相关booking
+		// Automatically delete all related bookings
 		deleteRelatedBookings(eventName, eventDate, eventLocation);
 	}
 
@@ -132,7 +137,7 @@ public class Organizer extends User {
 				writer.newLine();
 				writer.write("Artist: " + event.getArtist());
 				writer.newLine();
-				writer.newLine(); // 空行分隔符
+				writer.newLine(); // Blank line separator
 			}
 		} catch (IOException e) {
 			System.err.println("Error writing to file: " + e.getMessage());
@@ -155,7 +160,7 @@ public class Organizer extends User {
 		for (int i = 0; i < lines.size();) {
 			if (i + 3 < lines.size() && lines.get(i + 1)
 					.startsWith("Event Info: " + eventName + ", " + eventDate + ", " + eventLocation)) {
-				i += 5; // 跳过整个booking block（4行信息+空行）
+				i += 5; // Skip the entire booking block (4 lines of information + blank lines)
 			} else {
 				updatedLines.add(lines.get(i++));
 			}

@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 public class DataNotFoundException extends RuntimeException {
 	public DataNotFoundException(String message) {

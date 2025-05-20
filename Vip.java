@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,17 +19,25 @@ public class Vip extends Consumer {
 	public void vipBooking(int amount, Event event) {
 		if (!vip) {
 			throw new UnauthorizedAccessException("Only VIP users can book VIP tickets.");
-		} else if (amount > event.getEventVip()) {
-			throw new IllegalArgumentException("VIP 购票数量超过剩余票数");
-		} else {
-			event.setEventVip(event.getEventVip() - amount); // 减少 VIP 票数
-			writeBookingInfoToFile(DEFAULT_FILE_PATH, event, amount, true); // 写入购票信息，标记为 VIP
 		}
+		if (amount <= 0) {
+			throw new InvalidTicketAmountException("The number of VIP tickets purchased must be a positive integer.");
+		}
+		if (amount > event.getEventVip()) {
+			throw new IllegalArgumentException("The number of VIP tickets purchased exceeds the remaining number of tickets.");
+		}
+		event.setEventVip(event.getEventVip() - amount); // Reduce the number of VIP votes
+
+		writeBookingInfoToFile(DEFAULT_FILE_PATH, event, amount, true); // Fill in the ticket purchase information and mark it as VIP
+
 	}
 
 	@Override
 	public void cancelTicket(int amount, Event event, boolean isVip) {
-		// 读取文件内容
+		if (amount <= 0) {
+			throw new InvalidTicketAmountException("The number of cancellation votes must be a positive integer.");
+		}
+		// Read the content of the file
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH))) {
 			String line;
@@ -41,7 +49,7 @@ public class Vip extends Consumer {
 			return;
 		}
 
-		// 过滤记录
+		// Filtering Records
 		List<String> filteredLines = new ArrayList<>();
 		boolean found = false;
 		boolean isVipBooking = false;
@@ -59,19 +67,19 @@ public class Vip extends Consumer {
 					isVipBooking = vipLine.endsWith("Yes");
 
 					if (recordedAmount == amount) {
-						// 完全取消该记录
-						i += 4; // 跳过这一组
+						// Completely cancel this record
+						i += 4; // Skip this group
 						found = true;
 						continue;
 					} else if (recordedAmount > amount) {
-						// 部分取消，修改剩余数量
+						// Partially cancel and modify the remaining quantity
 						lines.set(i + 2, "Ticket Amount: " + (recordedAmount - amount));
 						found = true;
 					}
 				}
 			}
 
-			// 加入保留的行
+			// Add the reserved rows
 			filteredLines.add(line);
 		}
 
@@ -79,7 +87,7 @@ public class Vip extends Consumer {
 			throw new IllegalArgumentException("No matching booking found to cancel.");
 		}
 
-		// 重写文件内容
+		// Rewrite the content of the file
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(DEFAULT_FILE_PATH))) {
 			for (String filteredLine : filteredLines) {
 				writer.write(filteredLine);
@@ -89,7 +97,7 @@ public class Vip extends Consumer {
 			System.err.println("Error writing to file: " + e.getMessage());
 		}
 
-		// 恢复票数
+		// Restore the number of votes
 		if (isVipBooking) {
 			event.setEventVip(event.getEventVip() + amount);
 		} else {

@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 public class DataConflictException extends RuntimeException {
 	public DataConflictException(String message) {

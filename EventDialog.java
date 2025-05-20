@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.awt.GridLayout;
 
@@ -40,17 +40,17 @@ public class EventDialog {
 				int regTickets = Integer.parseInt(txtRegularTickets.getText());
 				int vipTickets = Integer.parseInt(txtVipTickets.getText());
 				if (name.isEmpty() || artist.isEmpty() || date.isEmpty() || location.isEmpty()) {
-					throw new InvalidEventInputException("所有字段都必须填写。");
+					throw new InvalidEventInputException("All fields must be filled in.");
 				}
 				if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
-					throw new InvalidEventInputException("日期格式必须为 yyyy-MM-dd。");
+					throw new InvalidEventInputException("The date format must beyyyy-MM-dd。");
 				}
 				if (regTickets < 0 || vipTickets < 0) {
-					throw new InvalidEventInputException("票数必须为非负整数。");
+					throw new InvalidEventInputException("The number of votes must be a non-negative integer.");
 				}
 				return new Event(name, artist, date, regTickets, vipTickets, location);
 			} catch (NumberFormatException e) {
-				throw new InvalidEventInputException("票数必须为整数。");
+				throw new InvalidEventInputException("The number of votes must be an integer.");
 			}
 		}
 		return null;

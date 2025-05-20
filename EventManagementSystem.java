@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -56,9 +56,7 @@ public class EventManagementSystem extends JFrame {
 		add(mainPanel, BorderLayout.CENTER);
 	}
 
-	/**
-	 * Creates the left-side navigation panel with action buttons.
-	 */
+	//Creates the left-side navigation panel with action buttons.
 	private JPanel createNavPanel() {
 		JPanel navPanel = new JPanel(new GridLayout(8, 1, 5, 5));
 		navPanel.setBackground(new Color(50, 50, 50));
@@ -103,10 +101,7 @@ public class EventManagementSystem extends JFrame {
 		return navPanel;
 	}
 
-	/**
-	 * Creates the Browse Events panel. Always loads the latest event info from the
-	 * file.
-	 */
+	//Creates the Browse Events panel. Always loads the latest event info from the file.
 	private JPanel createBrowsePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("Browse Events", JLabel.CENTER), BorderLayout.NORTH);
@@ -114,9 +109,7 @@ public class EventManagementSystem extends JFrame {
 		return panel;
 	}
 
-	/**
-	 * Creates the Book Tickets panel.
-	 */
+	//Creates the Book Tickets panel.
 	private JPanel createBookingPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("Book Tickets", JLabel.CENTER), BorderLayout.NORTH);
@@ -124,9 +117,7 @@ public class EventManagementSystem extends JFrame {
 		return panel;
 	}
 
-	/**
-	 * Creates the Cancel Bookings panel, showing the user's bookings.
-	 */
+	//Creates the Cancel Bookings panel, showing the user's bookings.
 	private JPanel createCancelPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("Cancel Bookings", JLabel.CENTER), BorderLayout.NORTH);
@@ -154,9 +145,7 @@ public class EventManagementSystem extends JFrame {
 		return panel;
 	}
 
-	/**
-	 * Creates the Manage Events panel for organizers.
-	 */
+	//Creates the Manage Events panel for organizers.
 	private JPanel createManagePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 
@@ -181,9 +170,7 @@ public class EventManagementSystem extends JFrame {
 		return panel;
 	}
 
-	/**
-	 * Handles the Add Event dialog and logic for organizers.
-	 */
+	// Handles the Add Event dialog and logic for organizers.
 	private void handleAddEvent() {
 		EventDialog dialog = new EventDialog();
 		try {
@@ -201,10 +188,7 @@ public class EventManagementSystem extends JFrame {
 		}
 	}
 
-	/**
-	 * Handles updating an existing event. Fields name, artist, and date are NOT
-	 * editable to ensure event identity.
-	 */
+	//Handles updating an existing event. Fields name, artist, and date are NOT editable to ensure event identity.
 	private void handleUpdateEvent() {
 		// Let user select which event to update
 		List<Event> events = loadEventsFromFile(Organizer.DEFAULT_FILE_PATH);
@@ -261,13 +245,13 @@ public class EventManagementSystem extends JFrame {
 				int regTickets = Integer.parseInt(txtRegularTickets.getText());
 				int vipTickets = Integer.parseInt(txtVipTickets.getText());
 				if (name.isEmpty() || artist.isEmpty() || date.isEmpty() || location.isEmpty()) {
-					throw new InvalidEventInputException("所有字段都必须填写。");
+					throw new InvalidEventInputException("All fields must be filled in.");
 				}
 				if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
-					throw new InvalidEventInputException("日期格式必须为 yyyy-MM-dd。");
+					throw new InvalidEventInputException("The date format must be yyyy-MM-dd");
 				}
 				if (regTickets < 0 || vipTickets < 0) {
-					throw new InvalidEventInputException("票数必须为非负整数。");
+					throw new InvalidEventInputException("The number of votes must be a non-negative integer");
 				}
 				Event updatedEvent = new Event(name, artist, date, regTickets, vipTickets, location);
 
@@ -279,9 +263,9 @@ public class EventManagementSystem extends JFrame {
 						JOptionPane.INFORMATION_MESSAGE);
 				refreshUI("Manage");
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "票数必须为整数。", "输入错误", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "The number of votes must be an integer.", "input error", JOptionPane.ERROR_MESSAGE);
 			} catch (InvalidEventInputException ex) {
-				JOptionPane.showMessageDialog(this, ex.getMessage(), "输入错误", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, ex.getMessage(), "input error", JOptionPane.ERROR_MESSAGE);
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(this, "Error updating event: " + ex.getMessage(), "Error",
 						JOptionPane.ERROR_MESSAGE);
@@ -289,10 +273,7 @@ public class EventManagementSystem extends JFrame {
 		}
 	}
 
-	/**
-	 * Handles deleting an event. Will also remove all related bookings
-	 * automatically.
-	 */
+	//Handles deleting an event. Will also remove all related bookings automatically.
 	private void handleDeleteEvent() {
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 		JTextField txtName = new JTextField();
@@ -326,10 +307,7 @@ public class EventManagementSystem extends JFrame {
 		}
 	}
 
-	/**
-	 * Handles the cancellation of a specific booking. After cancel, updates event
-	 * file and UI.
-	 */
+	//Handles the cancellation of a specific booking. After cancel, updates event file and UI.
 	private void handleCancelBooking(String bookingInfo) {
 		// Parse booking info to get event details
 		String[] lines = bookingInfo.split("\n");
@@ -398,13 +376,7 @@ public class EventManagementSystem extends JFrame {
 		}
 	}
 
-	/**
-	 * Loads and displays events from the event file.
-	 * 
-	 * @param bookingEnabled - whether to show booking buttons
-	 * @param cancelEnabled  - whether to show cancel buttons
-	 * @param manageEnabled  - (future use)
-	 */
+	// Loads and displays events from the event file.
 	private JPanel loadAndDisplayEvents(boolean bookingEnabled, boolean cancelEnabled, boolean manageEnabled) {
 		JPanel eventListPanel = new JPanel(new GridLayout(0, 3, 10, 10));
 		eventListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -445,10 +417,7 @@ public class EventManagementSystem extends JFrame {
 		return eventListPanel;
 	}
 
-	/**
-	 * Handles ticket booking for regular or VIP tickets. After booking, updates
-	 * event info and refreshes Browse panel.
-	 */
+	//Handles ticket booking for regular or VIP tickets. After booking, updates event info and refreshes Browse panel.
 	private void handleTicketBooking(Event event, boolean isVip, JTextArea eventInfo) {
 		if (!(currentUser instanceof Consumer)) {
 			JOptionPane.showMessageDialog(this, "Current user does not have booking permissions.", "Permission Denied",
@@ -487,16 +456,15 @@ public class EventManagementSystem extends JFrame {
 			refreshUI("Browse");
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "Invalid number entered.", "Error", JOptionPane.ERROR_MESSAGE);
+		} catch (InvalidTicketAmountException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "input error", JOptionPane.ERROR_MESSAGE);
 		} catch (UnauthorizedAccessException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Permission Denied", JOptionPane.ERROR_MESSAGE);
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
-	/**
-	 * Handles ticket cancellation from the event list panel (not booking list).
-	 */
+	//Handles ticket cancellation from the event list panel (not booking list).
 	private void handleTicketCancellation(Event event, JPanel eventListPanel, JPanel eventPanel) {
 		if (!(currentUser instanceof Consumer)) {
 			JOptionPane.showMessageDialog(this, "Current user does not have cancellation permissions.",
@@ -513,8 +481,8 @@ public class EventManagementSystem extends JFrame {
 			Consumer consumer = (Consumer) currentUser;
 
 			// Choose ticket type
-			String[] options = { "普通票", "VIP票" };
-			int choice = JOptionPane.showOptionDialog(this, "请选择要取消的票类型：", "取消票类型", JOptionPane.DEFAULT_OPTION,
+			String[] options = { "tickets", "VIP tickets" };
+			int choice = JOptionPane.showOptionDialog(this, "Please select the type of ticket to be cancelled: ", "Cancel ticket type", JOptionPane.DEFAULT_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			if (choice == JOptionPane.CLOSED_OPTION)
 				return;
@@ -530,7 +498,7 @@ public class EventManagementSystem extends JFrame {
 				updateEventFile(event);
 
 				refreshUI("Cancel");
-				refreshUI("Book"); // <-- 新增
+				refreshUI("Book"); // <-- news
 
 				JOptionPane.showMessageDialog(this, "Successfully canceled " + amount + " tickets.", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -589,18 +557,14 @@ public class EventManagementSystem extends JFrame {
 		}
 	}
 
-	/**
-	 * Returns human-readable event info.
-	 */
+	// Returns human-readable event info.
 	private String getEventInfoText(Event event) {
 		return "Event Name: " + event.getEventName() + "\n" + "Artist: " + event.getArtist() + "\n" + "Date: "
 				+ event.getEventDate() + "\n" + "Location: " + event.getEventLocation() + "\n" + "Regular Tickets: "
 				+ event.getEventAmount() + "\n" + "VIP Tickets: " + event.getEventVip();
 	}
 
-	/**
-	 * Loads all events from the event info file.
-	 */
+	//Loads all events from the event info file.
 	private List<Event> loadEventsFromFile(String filePath) {
 		List<Event> events = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -627,9 +591,7 @@ public class EventManagementSystem extends JFrame {
 		return events;
 	}
 
-	/**
-	 * Loads the current user's bookings from the booking info file.
-	 */
+	//Loads the current user's bookings from the booking info file.
 	private List<String> loadBookingInfoFromFile() {
 		List<String> bookingInfo = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new FileReader(Consumer.DEFAULT_FILE_PATH))) {
@@ -653,16 +615,12 @@ public class EventManagementSystem extends JFrame {
 		return bookingInfo;
 	}
 
-	/**
-	 * Sets the current logged-in user.
-	 */
+	//Sets the current logged-in user.
 	public void setCurrentUser(User user) {
 		this.currentUser = user;
 	}
 
-	/**
-	 * Main entry point for launching the GUI.
-	 */
+	//Main entry point for launching the GUI.
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			EventManagementSystem frame = new EventManagementSystem();

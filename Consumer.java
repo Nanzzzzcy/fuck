@@ -1,4 +1,4 @@
-package GUI10;
+package eventManageSystem;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,19 +27,25 @@ public class Consumer extends User implements Booking {
 
 	@Override
 	public void bookTicket(int amount, Event event) {
+		if (amount <= 0) {
+			throw new InvalidTicketAmountException("The number of tickets purchased must be a positive integer.");
+		}
 		if (amount > event.getEventAmount()) {
-			throw new IllegalArgumentException("购票数量超过剩余票数");
+			throw new IllegalArgumentException("The number of tickets purchased exceeds the remaining number of tickets");
 		}
 
-		// 更新事件的普通票数
+		// Update the ordinary votes of the event
 		event.setEventAmount(event.getEventAmount() - amount);
 		writeBookingInfoToFile(DEFAULT_FILE_PATH, event, amount, false);
 
 	}
 
-	// ...前略
 	@Override
 	public void cancelTicket(int amount, Event event, boolean isVip) {
+		if (amount <= 0) {
+			throw new InvalidTicketAmountException("The number of cancellation votes must be a positive integer.");
+		}
+
 		List<String> lines = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH))) {
 			String line;
@@ -87,7 +93,7 @@ public class Consumer extends User implements Booking {
 			System.err.println("Error writing to file: " + e.getMessage());
 		}
 
-		// 恢复票数
+		// Restore the number of votes
 		if (isVip) {
 			event.setEventVip(event.getEventVip() + amount);
 		} else {
